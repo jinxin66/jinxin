@@ -8,8 +8,8 @@
 
 ![闯关迷宫HTML+Canves+js实现]()
 
-![不要钱python+pygane实现]()
+![不要钱python+pygame实现]()
 
-![五子棋python+pygane实现]()
+![五子棋python+pygame实现]()
 
-![坦克大战python+pygane实现]()
+![坦克大战python+pygame实现]()
