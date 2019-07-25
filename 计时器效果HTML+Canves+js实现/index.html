@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	
+	<title>计时器效果</title>
+	<style type="text/css">
+		body{
+			height:100%;
+			background-color:#ccc;
+			overflow:hidden;
+		}
+		canvas{
+			display:block;
+			margin:40px auto;
+			box-shadow:0 0 20px 1px rgba(0,0,0,.3);
+		}
+	</style>
+    <script type="text/javascript">
+        doAdblock();
+        function doAdblock(){
+            (function() {
+                function A() {}
+                A.prototype = {
+                    get done() {
+                        if(!this._done) {
+                            this._done = new Array();
+                        }
+                        return this._done;
+                    },
+                    animationsHandler: function(e) {
+                        if(e.animationName === 'playerInserted') {
+                            this.replace(e.target);
+                        }
+                    },
+                    replace: function(elem) {
+                        if (/http:\/\/v.youku.com\/v_show\/.*/.test(window.location.href)){
+                            var tag = document.getElementById("playerBox").getAttribute("player")
+                            if (tag == "adt"){
+                                console.log("adt adv")
+                                return;
+                            }
+                        }
+                        if(this.done.indexOf(elem) != -1) return;
+                        this.done.push(elem);
+                        var player = elem.data || elem.src;
+                        if(!player) return;
+                        var i, find, replace = false;
+                        for(i in this.rules) {
+                            find = this.rules[i]['find'];
+                            if(find.test(player)) {
+                                replace = this.rules[i]['replace'];
+                                if('function' === typeof this.rules[i]['preHandle']) {
+                                    this.rules[i]['preHandle'].bind(this, elem, find, replace, player)();
+                                }else{
+                                    this.reallyReplace.bind(this, elem, find, replace)();
+                                }
+                                break;
+                            }
+                        }
+                    },
+                    reallyReplace: function(elem, find, replace) {
+                        elem.data && (elem.data = elem.data.replace(find, replace)) || elem.src && ((elem.src = elem.src.replace(find, replace)) && (elem.style.display = 'block'));
+                        var b = elem.querySelector("param[name='movie']");
+                        this.reloadPlugin(elem);
+                    },
+                    reloadPlugin: function(elem) {
+                        var nextSibling = elem.nextSibling;
+                        var parentNode = elem.parentNode;
+                        parentNode.removeChild(elem);
+                        var newElem = elem.cloneNode(true);
+                        this.done.push(newElem);
+                        if(nextSibling) {
+                            parentNode.insertBefore(newElem, nextSibling);
+                        } else {
+                            parentNode.appendChild(newElem);
+                        }
+                    },
+                    init: function() {
+                        var handler = this.animationsHandler.bind(this);
+                        document.body.addEventListener('webkitAnimationStart', handler, false);
+                        document.body.addEventListener('msAnimationStart', handler, false);
+                        document.body.addEventListener('oAnimationStart', handler, false);
+                        document.body.addEventListener('animationstart', handler, false);
+                        this.addAnimations();
+                    }
+                };
+                new A().init();
+            })();
+        }
+        // 20180730
+        (function cnbeta() {
+            if (document.URL.indexOf('cnbeta.com') >= 0) {
+                var elms = document.body.querySelectorAll("p>embed");
+                Array.prototype.forEach.call(elms, function(elm) {
+                    elm.style.marginLeft = "0px";
+                });
+            }
+        })();
+        //baidu
+        if(document.URL.indexOf('www.baidu.com') >= 0){
+            if(document && document.getElementsByTagName && document.getElementById && document.body){
+                var aa = function(){
+                    var all = document.body.querySelectorAll("#content_left div,#content_left table");
+                    for(var i = 0; i < all.length; i++){
+                        if(/display:\s?(table|block)\s!important/.test(all[i].getAttribute("style"))){all[i].style.display= "none";all[i].style.visibility='hidden';}
+                    }
+                    all = document.body.querySelectorAll('.result.c-container[id="1"]');
+                    //if(all.length == 1) return;
+                    for(var i = 0; i < all.length; i++){
+                        if(all[i].innerHTML && all[i].innerHTML.indexOf('广告')>-1){
+                            all[i].style.display= "none";all[i].style.visibility='hidden';
+                        }
+                    }
+                }
+                aa();
+                document.getElementById('wrapper_wrapper').addEventListener('DOMSubtreeModified',aa)
+            };
+        }
+        // 20180922
+        (function kill_360() {
+            if (document.URL.indexOf('so.com') >= 0) {
+                document.getElementById("e_idea_pp").style.display = none;
+            }
+        })();
+        if (document.URL.indexOf("tv.sohu.com") >= 0){
+            if (document.cookie.indexOf("fee_status=true")==-1){document.cookie='fee_status=true'};
+        }
+        if (document.URL.indexOf("56.com") >= 0){
+            if (document.cookie.indexOf("fee_status=true")==-1){document.cookie='fee_status=true'};
+        }
+        if (document.URL.indexOf("iqiyi.com") >= 0){
+            if (document.cookie.indexOf("player_forcedType=h5_VOD")==-1){
+                document.cookie='player_forcedType=h5_VOD'
+                if(localStorage.reloadTime && Date.now() - parseInt(localStorage.reloadTime)<60000){
+                    console.log('no reload')
+                }else{
+                    location.reload()
+                    localStorage.reloadTime = Date.now();
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+	<canvas id="canvas" width="1080" height="478"></canvas>
+	<script type="text/javascript" src="./digit.js"></script>
+	<script type="text/javascript" src="./countdown.js"></script>
+</body>
+</html>
